@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MarkovClassifier {
+
+    // Transition Matrix probabilities for markov - chains
     public TransitionMatrix hnTM;
     public TransitionMatrix hmTM;
     public TransitionMatrix hhTM;
@@ -12,111 +14,92 @@ public class MarkovClassifier {
     public TransitionMatrix mnTM;
     public TransitionMatrix mmTM;
 
-    float hn = 0;
-    float hm = 0;
-    float hh = 0;
-    float nh = 0;
-    float nm = 0;
-    float nn = 0;
-    float mh = 0;
-    float mn = 0;
-    float mm = 0;
-    float hn1 = 0;
-    float hm1 = 0;
-    float hh1 = 0;
-    float nh1 = 0;
-    float nm1 = 0;
-    float nn1 = 0;
-    float mh1 = 0;
-    float mn1 = 0;
-    float mm1 = 0;
+    // Count of markov - chain occurrence in Ungünstig Data
+    float hnU = 0;
+    float hmU = 0;
+    float hhU = 0;
+    float nhU = 0;
+    float nmU = 0;
+    float nnU = 0;
+    float mhU = 0;
+    float mnU = 0;
+    float mmU = 0;
+
+    // Count of markov - chain occurrence in Günstig Data
+    float hnG = 0;
+    float hmG = 0;
+    float hhG = 0;
+    float nhG = 0;
+    float nmG = 0;
+    float nnG = 0;
+    float mhG = 0;
+    float mnG = 0;
+    float mmG = 0;
 
     public List<TransitionMatrix> train(List<MessageData> traindata) {
         List<TransitionMatrix> result = new ArrayList<>();
-        // for every line count  transitions in gunstig & ungunstig lines
-        // add those two values inside result list as new transitionmatrix
         for(MessageData  messagedata : traindata){
             char currentPhase = messagedata.phase;
             List<Character> messwerten = messagedata.messwerte;
-            // U h m n m h m m h n m n m h n n m n m n h
+
             for (int i = 0; i < messwerten.size() - 1; i++) {
                 char currentMesswert = messwerten.get(i);
                 char nextMesswert = messwerten.get(i + 1);
                 if(currentPhase == 'U') {
                     if (currentMesswert == 'h' && nextMesswert == 'n') {
-                        hn++;
+                        hnU++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'm') {
-                        hm++;
+                        hmU++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'h') {
-                        hh++;
+                        hhU++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'm') {
-                        nm++;
+                        nmU++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'h') {
-                        nh++;
+                        nhU++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'n') {
-                        nn++;
+                        nnU++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'h') {
-                        mh++;
+                        mhU++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'n') {
-                        mn++;
+                        mnU++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'm') {
-                        mm++;
+                        mmU++;
                     }
                 }
 
                 if(currentPhase == 'G') {
                     if (currentMesswert == 'h' && nextMesswert == 'n') {
-                        hn1++;
+                        hnG++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'm') {
-                        hm1++;
+                        hmG++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'h') {
-                        hh1++;
+                        hhG++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'm') {
-                        nm1++;
+                        nmG++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'h') {
-                        nh1++;
+                        nhG++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'n') {
-                        nn1++;
+                        nnG++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'h') {
-                        mh1++;
+                        mhG++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'n') {
-                        mn1++;
+                        mnG++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'm') {
-                        mm1++;
+                        mmG++;
                     }
                 }
             }
         }
 
-        float prob_hn_ungunstig = hn / (hn+hn1);
-        float prob_hm_ungunstig = hm / (hm+hm1);
-        float prob_hh_ungunstig = hh / (hh+hh1);
-        float prob_nh_ungunstig = nh / (nh+nh1);
-        float prob_nm_ungunstig = nm / (nm+nm1);
-        float prob_nn_ungunstig = nn / (nn+nn1);
-        float prob_mn_ungunstig = mn / (mn+mn1);
-        float prob_mh_ungunstig = mh / (mh+mh1);
-        float prob_mm_ungunstig = mm / (mm+mm1);
-
-
-        float prob_hm1_gunstig = hm1 / (hm+hm1);
-        float prob_hn1_gunstig = hn1 / (hn+hn1);
-        float prob_hh1_gunstig = hh1 / (hh+hh1);
-        float prob_nh1_gunstig = nh1 / (nh+nh1);
-        float prob_nm1_gunstig = nm1 / (nm+nm1);
-        float prob_nn1_gunstig = nn1 / (nn+nn1);
-        float prob_mn1_gunstig = mn1 / (mn+mn1);
-        float prob_mh1_gunstig = mh1 / (mh+mh1);
-        float prob_mm1_gunstig = mm1 / (mm+mm1);
-        hnTM = new TransitionMatrix("hn", prob_hn_ungunstig, prob_hn1_gunstig);
-        hmTM = new TransitionMatrix("hm", prob_hm_ungunstig, prob_hm1_gunstig);
-        hhTM = new TransitionMatrix("hh", prob_hh_ungunstig, prob_hh1_gunstig);
-        nhTM = new TransitionMatrix("nh", prob_nh_ungunstig, prob_nh1_gunstig);
-        nmTM = new TransitionMatrix("nm", prob_nm_ungunstig, prob_nm1_gunstig);
-        nnTM = new TransitionMatrix("nn", prob_nn_ungunstig, prob_nn1_gunstig);
-        mhTM = new TransitionMatrix("mh", prob_mh_ungunstig, prob_mh1_gunstig);
-        mnTM = new TransitionMatrix("mn", prob_mn_ungunstig, prob_mn1_gunstig);
-        mmTM = new TransitionMatrix("mm", prob_mm_ungunstig, prob_mm1_gunstig);
+        hnTM = new TransitionMatrix("hn", calculateUnGunstigProbability(hnU, hnG), calculateGunstigProbability(hnU, hnG));
+        hmTM = new TransitionMatrix("hm", calculateUnGunstigProbability(hmU, hmG), calculateGunstigProbability(hmU, hmG));
+        hhTM = new TransitionMatrix("hh", calculateUnGunstigProbability(hhU, hhG), calculateGunstigProbability(hhU, hhG));
+        nhTM = new TransitionMatrix("nh", calculateUnGunstigProbability(nhU, nhG), calculateGunstigProbability(nhU, nhG));
+        nmTM = new TransitionMatrix("nm", calculateUnGunstigProbability(nmU, nmG), calculateGunstigProbability(nmU, nmG));
+        nnTM = new TransitionMatrix("nn", calculateUnGunstigProbability(nnU, nnG), calculateGunstigProbability(nnU, nnG));
+        mhTM = new TransitionMatrix("mh", calculateUnGunstigProbability(mhU, mhG), calculateGunstigProbability(mhU, mhG));
+        mnTM = new TransitionMatrix("mn", calculateUnGunstigProbability(mnU, mnG), calculateGunstigProbability(mnU, mnG));
+        mmTM = new TransitionMatrix("mm", calculateUnGunstigProbability(mmU, mmG), calculateGunstigProbability(mmU, mmG));
 
         result.add(hnTM);
         result.add(hmTM);
@@ -131,14 +114,16 @@ public class MarkovClassifier {
         return result;
     }
 
+    private float calculateGunstigProbability(float ungunstigCount, float gunstigCount) {
+        return gunstigCount / (ungunstigCount + gunstigCount);
+    }
+
+    private float calculateUnGunstigProbability(float ungunstigCount, float gunstigCount) {
+        return ungunstigCount / (ungunstigCount + gunstigCount);
+    }
+
     public float evaluate(List<TransitionMatrix> transitionMatrix, List<MessageData> evaldata) {
-        int countPLUS20 = 0;
         int gewinn = 0;
-        // sum gunstig transitionmatrix values
-        // sum ungunstig transitionmatrix values
-        // compare both and whichever is higher : choose that
-        // gunstig oder ungunstig gefunden
-        // gewinn calculate
         for(MessageData  messagedata : evaldata){
             char actualPhase = messagedata.phase;
             char calculatedPhase = '\0';
@@ -191,7 +176,6 @@ public class MarkovClassifier {
                 gewinn -= 2;
                 System.out.println("calculatedPhase ist ungünstig und actualphase ist günstig: -2");
             } else if (calculatedPhase == 'G' && actualPhase == 'U') {
-                countPLUS20++;
                 gewinn -= 12;
                 System.out.println("calculatedPhase ist günstig und actualphase ist ungünstig: -12");
             } else if (calculatedPhase == 'U' && actualPhase == 'U') {
@@ -200,7 +184,6 @@ public class MarkovClassifier {
             }
 
         }
-        System.out.println("PLUS 20 N TIMES: " + countPLUS20);
         return gewinn;
     }
 }
