@@ -1,9 +1,13 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The Classifier class represents a classifier that uses Markov chains to train using training data and predict whether to sow or not sow based on evaluation data.
+ */
+
 public class Classifier {
 
-    // Transition Matrix probabilities for markov - chains
+    // Transition Matrix probabilities of each markov - chains
     public TransitionMatrix hnTM;
     public TransitionMatrix hmTM;
     public TransitionMatrix hhTM;
@@ -14,7 +18,7 @@ public class Classifier {
     public TransitionMatrix mnTM;
     public TransitionMatrix mmTM;
 
-    // Count of markov - chain occurrence in Ungünstig Data
+    // Count of markov - chain occurrence in Ungünstig Phase
     float hnU = 0;
     float hmU = 0;
     float hhU = 0;
@@ -25,7 +29,7 @@ public class Classifier {
     float mnU = 0;
     float mmU = 0;
 
-    // Count of markov - chain occurrence in Günstig Data
+    // Count of markov - chain occurrence in Günstig Phase
     float hnG = 0;
     float hmG = 0;
     float hhG = 0;
@@ -37,12 +41,12 @@ public class Classifier {
     float mmG = 0;
 
     // State of transitions
-    public int UngunstigStateH;
-    public int UngunstigStateM;
-    public int UngunstigStateN;
-    public int GunstigStateH;
-    public int GunstigStateM;
-    public int GunstigStateN;
+    public int countOfTotal_h_chains_ungunstig;
+    public int countOfTotal_m_chains_ungunstig;
+    public int countOfTotal_n_chains_ungunstig;
+    public int countOfTotal_h_chains_gunstig;
+    public int countOfTotal_m_chains_gunstig;
+    public int countOfTotal_n_chains_gunstig;
 
     /**
      * Trains the classifier and calculates transition probabilities for Ungunstig and Gunstig phases.
@@ -52,85 +56,88 @@ public class Classifier {
 
     public List<TransitionMatrix> train(List<MessageData> traindata) {
         List<TransitionMatrix> result = new ArrayList<>();
+
         for(MessageData  messagedata : traindata){
             char currentPhase = messagedata.phase;
             List<Character> messwerten = messagedata.messwerte;
             for (int i = 0; i < messwerten.size() - 1; i++) {
                 char currentMesswert = messwerten.get(i);
                 char nextMesswert = messwerten.get(i + 1);
+
                 if(currentPhase == 'U') {
                     if (currentMesswert == 'h' && nextMesswert == 'n') {
                         hnU++;
-                        UngunstigStateH++;
+                        countOfTotal_h_chains_ungunstig++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'm') {
                         hmU++;
-                        UngunstigStateH++;
+                        countOfTotal_h_chains_ungunstig++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'h') {
                         hhU++;
-                        UngunstigStateH++;
+                        countOfTotal_h_chains_ungunstig++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'm') {
                         nmU++;
-                        UngunstigStateN++;
+                        countOfTotal_n_chains_ungunstig++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'h') {
                         nhU++;
-                        UngunstigStateN++;
+                        countOfTotal_n_chains_ungunstig++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'n') {
                         nnU++;
-                        UngunstigStateN++;
+                        countOfTotal_n_chains_ungunstig++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'h') {
                         mhU++;
-                        UngunstigStateM++;
+                        countOfTotal_m_chains_ungunstig++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'n') {
                         mnU++;
-                        UngunstigStateM++;
+                        countOfTotal_m_chains_ungunstig++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'm') {
                         mmU++;
-                        UngunstigStateM++;
+                        countOfTotal_m_chains_ungunstig++;
                     }
                 }
 
                 if(currentPhase == 'G') {
                     if (currentMesswert == 'h' && nextMesswert == 'n') {
                         hnG++;
-                        GunstigStateH++;
+                        countOfTotal_h_chains_gunstig++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'm') {
                         hmG++;
-                        GunstigStateH++;
+                        countOfTotal_h_chains_gunstig++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'h') {
                         hhG++;
-                        GunstigStateH++;
+                        countOfTotal_h_chains_gunstig++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'm') {
                         nmG++;
-                        GunstigStateN++;
+                        countOfTotal_n_chains_gunstig++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'h') {
                         nhG++;
-                        GunstigStateN++;
+                        countOfTotal_n_chains_gunstig++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'n') {
                         nnG++;
-                        GunstigStateN++;
+                        countOfTotal_n_chains_gunstig++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'h') {
                         mhG++;
-                        GunstigStateM++;
+                        countOfTotal_m_chains_gunstig++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'n') {
                         mnG++;
-                        GunstigStateM++;
+                        countOfTotal_m_chains_gunstig++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'm') {
                         mmG++;
-                        GunstigStateM++;
+                        countOfTotal_m_chains_gunstig++;
                     }
                 }
             }
         }
 
-        hnTM = new TransitionMatrix("hn", hnU / UngunstigStateH, hnG / GunstigStateH);
-        hmTM = new TransitionMatrix("hm", hmU / UngunstigStateH, hmG / GunstigStateH);
-        hhTM = new TransitionMatrix("hh", hhU / UngunstigStateH, hhG / GunstigStateH);
-        nhTM = new TransitionMatrix("nh", nhU / UngunstigStateN, nhG / GunstigStateN);
-        nmTM = new TransitionMatrix("nm", nmU / UngunstigStateN, nmG / GunstigStateN);
-        nnTM = new TransitionMatrix("nn", nnU / UngunstigStateN, nnG / GunstigStateN);
-        mhTM = new TransitionMatrix("mh", mhU / UngunstigStateM, mhG / GunstigStateM);
-        mnTM = new TransitionMatrix("mn", mnU / UngunstigStateM, mnG / GunstigStateM);
-        mmTM = new TransitionMatrix("mm", mmU / UngunstigStateM, mmG / GunstigStateM);
+        // Saving TransitionMatrix probabilities
+        hnTM = new TransitionMatrix("hn", hnU / countOfTotal_h_chains_ungunstig, hnG / countOfTotal_h_chains_gunstig);
+        hmTM = new TransitionMatrix("hm", hmU / countOfTotal_h_chains_ungunstig, hmG / countOfTotal_h_chains_gunstig);
+        hhTM = new TransitionMatrix("hh", hhU / countOfTotal_h_chains_ungunstig, hhG / countOfTotal_h_chains_gunstig);
+        nhTM = new TransitionMatrix("nh", nhU / countOfTotal_n_chains_ungunstig, nhG / countOfTotal_n_chains_gunstig);
+        nmTM = new TransitionMatrix("nm", nmU / countOfTotal_n_chains_ungunstig, nmG / countOfTotal_n_chains_gunstig);
+        nnTM = new TransitionMatrix("nn", nnU / countOfTotal_n_chains_ungunstig, nnG / countOfTotal_n_chains_gunstig);
+        mhTM = new TransitionMatrix("mh", mhU / countOfTotal_m_chains_ungunstig, mhG / countOfTotal_m_chains_gunstig);
+        mnTM = new TransitionMatrix("mn", mnU / countOfTotal_m_chains_ungunstig, mnG / countOfTotal_m_chains_gunstig);
+        mmTM = new TransitionMatrix("mm", mmU / countOfTotal_m_chains_ungunstig, mmG / countOfTotal_m_chains_gunstig);
 
         result.add(hnTM);
         result.add(hmTM);
@@ -163,6 +170,8 @@ public class Classifier {
             for (int i = 0; i < messwerten.size() - 1; i++) {
                 char currentMesswert = messwerten.get(i);
                 char nextMesswert = messwerten.get(i + 1);
+
+                // Calculate probabilities for both phases
                 if(currentMesswert == 'h' && nextMesswert == 'm'){
                     totalungunstigPrb += hmTM.ungunstigProbability;
                     totalgunstigPrb += hmTM.gunstigProbability;

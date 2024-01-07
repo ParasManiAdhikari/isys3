@@ -15,8 +15,9 @@ public class Main {
         float gewinn = classifier.evaluate(evaldata);
         System.out.println("TOTAL GEWINN: " + gewinn);
     }
+
     /**
-     * Reads MessageData from a file and returns a list of MessageData.
+     * Reads MessageData from a file path and returns a list of MessageData instances.
      * @return List of MessageData read from the file.
      */
     public static List<MessageData> readFromFile(String fileName) throws IOException {
