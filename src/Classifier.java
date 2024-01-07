@@ -44,12 +44,17 @@ public class Classifier {
     public int GunstigStateM;
     public int GunstigStateN;
 
+    /**
+     * Trains the classifier and calculates transition probabilities for Ungunstig and Gunstig phases.
+     * @param traindata List of MessageData for training.
+     * @return List of TransitionMatrix representing calculated probabilities.
+     */
+
     public List<TransitionMatrix> train(List<MessageData> traindata) {
         List<TransitionMatrix> result = new ArrayList<>();
         for(MessageData  messagedata : traindata){
             char currentPhase = messagedata.phase;
             List<Character> messwerten = messagedata.messwerte;
-
             for (int i = 0; i < messwerten.size() - 1; i++) {
                 char currentMesswert = messwerten.get(i);
                 char nextMesswert = messwerten.get(i + 1);
@@ -139,6 +144,12 @@ public class Classifier {
 
         return result;
     }
+
+    /**
+     * Evaluates the classifier on evaluation data and calculates total win/loss based on predicted and actual phases.
+     * @param evaldata List of MessageData for evaluation.
+     * @return Total win/loss based on the evaluation.
+     */
 
     public float evaluate(List<MessageData> evaldata) {
         int gewinn = 0;

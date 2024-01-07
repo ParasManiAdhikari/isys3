@@ -11,11 +11,14 @@ public class Main {
         String evalDataPath = "src/eval.txt";
         List<MessageData> evaldata = readFromFile(evalDataPath);
         Classifier classifier = new Classifier();
-        List<TransitionMatrix> transitionMatrix = classifier.train(traindata);
+        classifier.train(traindata);
         float gewinn = classifier.evaluate(evaldata);
         System.out.println("TOTAL GEWINN: " + gewinn);
     }
-
+    /**
+     * Reads MessageData from a file and returns a list of MessageData.
+     * @return List of MessageData read from the file.
+     */
     public static List<MessageData> readFromFile(String fileName) throws IOException {
         List<MessageData> messageList = new ArrayList<>();
 
