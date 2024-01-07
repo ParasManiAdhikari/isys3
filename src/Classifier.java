@@ -189,16 +189,16 @@ public class Classifier {
 
             if (calculatedPhase == 'G' && actualPhase == 'G') {
                 gewinn += 20;
-                System.out.println("CalculatedPhase ist günstig und Actualphase ist günstig: +20");
-            } else if (calculatedPhase == 'U' && actualPhase == 'G') {
-                gewinn -= 2;
-                System.out.println("CalculatedPhase ist ungünstig und Actualphase ist günstig: -2");
+                System.out.println("Calculated:\tAussaat \t\t| Actualphase ist günstig:\t\t+20");
             } else if (calculatedPhase == 'G' && actualPhase == 'U') {
                 gewinn -= 12;
-                System.out.println("CalculatedPhase ist günstig und Actualphase ist ungünstig: -12");
+                System.out.println("Calculated:\tAussaat \t\t| Actualphase ist ungünstig:\t-12");
+            } else if (calculatedPhase == 'U' && actualPhase == 'G') {
+                gewinn -= 2;
+                System.out.println("Calculated:\tKein Aussaat \t| Actualphase ist günstig:\t\t-2");
             } else if (calculatedPhase == 'U' && actualPhase == 'U') {
                 gewinn -= 1;
-                System.out.println("CalculatedPhase ist ungünstig und Actualphase ist ungünstig: -1 ");
+                System.out.println("Calculated:\tKein Aussaat \t| Actualphase ist ungünstig:\t-1 ");
             }
         }
         return gewinn;

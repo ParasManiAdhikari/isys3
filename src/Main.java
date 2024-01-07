@@ -11,7 +11,7 @@ public class Main {
         String evalDataPath = "src/eval.txt";
         List<MessageData> evaldata = readFromFile(evalDataPath);
         Classifier classifier = new Classifier();
-        classifier.train(traindata);
+        List<TransitionMatrix> transitionMatrix = classifier.train(traindata);
         float gewinn = classifier.evaluate(evaldata);
         System.out.println("TOTAL GEWINN: " + gewinn);
     }
