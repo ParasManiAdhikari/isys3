@@ -6,23 +6,15 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        String trainingData = "src/train.txt";
-        String evaldata = "src/eval.txt";
-        float gewinn = classifier(trainingData, evaldata);
-        System.out.println("GEWINN : " + gewinn);
-    }
-
-    private static float classifier(String trainingdataFile, String evaldataFile) throws IOException {
-        List<MessageData> traindata = readFromFile(trainingdataFile);
-        List<MessageData> evaldata = readFromFile(evaldataFile);
-        //System.out.println(traindata);
+        String trainingDataPath = "src/train.txt";
+        List<MessageData> traindata = readFromFile(trainingDataPath);
+        String evalDataPath = "src/eval.txt";
+        List<MessageData> evaldata = readFromFile(evalDataPath);
         Classifier classifier = new Classifier();
-        List<TransitionMatrix> transitionMatrix = classifier.train(traindata);
-        float gewinn = classifier.evaluate(transitionMatrix, evaldata);
-        //System.out.println(gewinn);
-        return gewinn;
+        classifier.train(traindata);
+        float gewinn = classifier.evaluate(evaldata);
+        System.out.println("TOTAL GEWINN: " + gewinn);
     }
-
 
     public static List<MessageData> readFromFile(String fileName) throws IOException {
         List<MessageData> messageList = new ArrayList<>();

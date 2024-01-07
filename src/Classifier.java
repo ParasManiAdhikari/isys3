@@ -36,6 +36,14 @@ public class Classifier {
     float mnG = 0;
     float mmG = 0;
 
+    // State of transitions
+    public int UngunstigStateH;
+    public int UngunstigStateM;
+    public int UngunstigStateN;
+    public int GunstigStateH;
+    public int GunstigStateM;
+    public int GunstigStateN;
+
     public List<TransitionMatrix> train(List<MessageData> traindata) {
         List<TransitionMatrix> result = new ArrayList<>();
         for(MessageData  messagedata : traindata){
@@ -48,58 +56,76 @@ public class Classifier {
                 if(currentPhase == 'U') {
                     if (currentMesswert == 'h' && nextMesswert == 'n') {
                         hnU++;
+                        UngunstigStateH++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'm') {
                         hmU++;
+                        UngunstigStateH++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'h') {
                         hhU++;
+                        UngunstigStateH++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'm') {
                         nmU++;
+                        UngunstigStateN++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'h') {
                         nhU++;
+                        UngunstigStateN++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'n') {
                         nnU++;
+                        UngunstigStateN++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'h') {
                         mhU++;
+                        UngunstigStateM++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'n') {
                         mnU++;
+                        UngunstigStateM++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'm') {
                         mmU++;
+                        UngunstigStateM++;
                     }
                 }
 
                 if(currentPhase == 'G') {
                     if (currentMesswert == 'h' && nextMesswert == 'n') {
                         hnG++;
+                        GunstigStateH++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'm') {
                         hmG++;
+                        GunstigStateH++;
                     } else if (currentMesswert == 'h' && nextMesswert == 'h') {
                         hhG++;
+                        GunstigStateH++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'm') {
                         nmG++;
+                        GunstigStateN++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'h') {
                         nhG++;
+                        GunstigStateN++;
                     } else if (currentMesswert == 'n' && nextMesswert == 'n') {
                         nnG++;
+                        GunstigStateN++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'h') {
                         mhG++;
+                        GunstigStateM++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'n') {
                         mnG++;
+                        GunstigStateM++;
                     } else if (currentMesswert == 'm' && nextMesswert == 'm') {
                         mmG++;
+                        GunstigStateM++;
                     }
                 }
             }
         }
 
-        hnTM = new TransitionMatrix("hn", calculateUnGunstigProbability(hnU, hnG), calculateGunstigProbability(hnU, hnG));
-        hmTM = new TransitionMatrix("hm", calculateUnGunstigProbability(hmU, hmG), calculateGunstigProbability(hmU, hmG));
-        hhTM = new TransitionMatrix("hh", calculateUnGunstigProbability(hhU, hhG), calculateGunstigProbability(hhU, hhG));
-        nhTM = new TransitionMatrix("nh", calculateUnGunstigProbability(nhU, nhG), calculateGunstigProbability(nhU, nhG));
-        nmTM = new TransitionMatrix("nm", calculateUnGunstigProbability(nmU, nmG), calculateGunstigProbability(nmU, nmG));
-        nnTM = new TransitionMatrix("nn", calculateUnGunstigProbability(nnU, nnG), calculateGunstigProbability(nnU, nnG));
-        mhTM = new TransitionMatrix("mh", calculateUnGunstigProbability(mhU, mhG), calculateGunstigProbability(mhU, mhG));
-        mnTM = new TransitionMatrix("mn", calculateUnGunstigProbability(mnU, mnG), calculateGunstigProbability(mnU, mnG));
-        mmTM = new TransitionMatrix("mm", calculateUnGunstigProbability(mmU, mmG), calculateGunstigProbability(mmU, mmG));
+        hnTM = new TransitionMatrix("hn", hnU / UngunstigStateH, hnG / GunstigStateH);
+        hmTM = new TransitionMatrix("hm", hmU / UngunstigStateH, hmG / GunstigStateH);
+        hhTM = new TransitionMatrix("hh", hhU / UngunstigStateH, hhG / GunstigStateH);
+        nhTM = new TransitionMatrix("nh", nhU / UngunstigStateN, nhG / GunstigStateN);
+        nmTM = new TransitionMatrix("nm", nmU / UngunstigStateN, nmG / GunstigStateN);
+        nnTM = new TransitionMatrix("nn", nnU / UngunstigStateN, nnG / GunstigStateN);
+        mhTM = new TransitionMatrix("mh", mhU / UngunstigStateM, mhG / GunstigStateM);
+        mnTM = new TransitionMatrix("mn", mnU / UngunstigStateM, mnG / GunstigStateM);
+        mmTM = new TransitionMatrix("mm", mmU / UngunstigStateM, mmG / GunstigStateM);
 
         result.add(hnTM);
         result.add(hmTM);
@@ -114,15 +140,7 @@ public class Classifier {
         return result;
     }
 
-    private float calculateGunstigProbability(float ungunstigCount, float gunstigCount) {
-        return gunstigCount / (ungunstigCount + gunstigCount);
-    }
-
-    private float calculateUnGunstigProbability(float ungunstigCount, float gunstigCount) {
-        return ungunstigCount / (ungunstigCount + gunstigCount);
-    }
-
-    public float evaluate(List<TransitionMatrix> transitionMatrix, List<MessageData> evaldata) {
+    public float evaluate(List<MessageData> evaldata) {
         int gewinn = 0;
         for(MessageData  messagedata : evaldata){
             char actualPhase = messagedata.phase;
@@ -171,18 +189,17 @@ public class Classifier {
 
             if (calculatedPhase == 'G' && actualPhase == 'G') {
                 gewinn += 20;
-                System.out.println("calculatedPhase ist günstig und actualphase ist günstig: +20");
+                System.out.println("CalculatedPhase ist günstig und Actualphase ist günstig: +20");
             } else if (calculatedPhase == 'U' && actualPhase == 'G') {
                 gewinn -= 2;
-                System.out.println("calculatedPhase ist ungünstig und actualphase ist günstig: -2");
+                System.out.println("CalculatedPhase ist ungünstig und Actualphase ist günstig: -2");
             } else if (calculatedPhase == 'G' && actualPhase == 'U') {
                 gewinn -= 12;
-                System.out.println("calculatedPhase ist günstig und actualphase ist ungünstig: -12");
+                System.out.println("CalculatedPhase ist günstig und Actualphase ist ungünstig: -12");
             } else if (calculatedPhase == 'U' && actualPhase == 'U') {
                 gewinn -= 1;
-                System.out.println("calculatedPhase ist ungünstig und actualphase ist ungünstig: -1 ");
+                System.out.println("CalculatedPhase ist ungünstig und Actualphase ist ungünstig: -1 ");
             }
-
         }
         return gewinn;
     }
