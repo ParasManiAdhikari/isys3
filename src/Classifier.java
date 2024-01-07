@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarkovClassifier {
+public class Classifier {
 
     // Transition Matrix probabilities for markov - chains
     public TransitionMatrix hnTM;

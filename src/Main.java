@@ -6,9 +6,9 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        String trainingdata = "src/train.txt";
+        String trainingData = "src/train.txt";
         String evaldata = "src/eval.txt";
-        float gewinn = classifier(trainingdata, evaldata);
+        float gewinn = classifier(trainingData, evaldata);
         System.out.println("GEWINN : " + gewinn);
     }
 
@@ -16,11 +16,11 @@ public class Main {
         List<MessageData> traindata = readFromFile(trainingdataFile);
         List<MessageData> evaldata = readFromFile(evaldataFile);
         //System.out.println(traindata);
-        MarkovClassifier classifier = new MarkovClassifier();
+        Classifier classifier = new Classifier();
         List<TransitionMatrix> transitionMatrix = classifier.train(traindata);
         float gewinn = classifier.evaluate(transitionMatrix, evaldata);
         //System.out.println(gewinn);
-        return  gewinn;
+        return gewinn;
     }
 
 
